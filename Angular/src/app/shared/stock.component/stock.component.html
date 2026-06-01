@@ -1,0 +1,119 @@
+<div class="min-h-screen bg-[radial-gradient(circle_at_top_right,_#2f1323_0%,_#140914_40%,_#030712_100%)] px-6 py-10 text-slate-100">
+  <div class="mx-auto max-w-6xl space-y-8">
+    <div class="space-y-3">
+      <p class="text-sm font-medium uppercase tracking-[0.28em] text-fuchsia-300">Stock</p>
+      <h1 class="text-4xl font-semibold text-white">Controle o inventário com precisão</h1>
+      <p class="max-w-2xl text-sm leading-7 text-slate-400">
+        Atualize quantidades por produto e acompanhe rapidamente o nível de disponibilidade.
+      </p>
+    </div>
+
+    <div class="grid gap-8 xl:grid-cols-[0.95fr_1.05fr]">
+      <section class="rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-2xl shadow-fuchsia-950/20 backdrop-blur">
+        <div class="mb-6 flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-semibold text-white">{{ isEditing() ? 'Editar estoque' : 'Novo registro de estoque' }}</h2>
+            <p class="text-sm text-slate-400">Selecione o produto e ajuste a quantidade disponível.</p>
+          </div>
+        </div>
+
+        <form [formGroup]="stockForm" (ngSubmit)="submit()" class="space-y-5">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-200">Produto</label>
+            <select
+              formControlName="productID"
+              class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-100 outline-none transition focus:border-fuchsia-400 focus:ring-2 focus:ring-fuchsia-400/20"
+            >
+              <option [ngValue]="null">Selecione um produto</option>
+              @for (product of products(); track product.productID) {
+                <option [ngValue]="product.productID">{{ product.productName }}</option>
+              }
+            </select>
+            @if (f.productID.touched && f.productID.invalid) {
+              <p class="text-sm text-rose-300">Selecione um produto.</p>
+            }
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-200">Quantidade</label>
+            <input
+              formControlName="quantity"
+              type="number"
+              min="0"
+              class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-fuchsia-400 focus:ring-2 focus:ring-fuchsia-400/20"
+            />
+            @if (f.quantity.touched && f.quantity.invalid) {
+              <p class="text-sm text-rose-300">A quantidade deve ser zero ou maior.</p>
+            }
+          </div>
+
+          @if (error(); as errorValue) {
+            <div class="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+              {{ errorValue.error?.message || 'Nao foi possível salvar o estoque.' }}
+            </div>
+          }
+
+          <div class="flex flex-wrap gap-3">
+            <button
+              type="submit"
+              [disabled]="loading()"
+              class="rounded-2xl bg-fuchsia-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-fuchsia-300 disabled:cursor-not-allowed disabled:bg-fuchsia-900/40 disabled:text-slate-300"
+            >
+              {{ loading() ? 'Salvando...' : (isEditing() ? 'Atualizar estoque' : 'Criar estoque') }}
+            </button>
+
+            <button
+              type="button"
+              (click)="resetForm()"
+              class="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-medium text-slate-200 transition hover:bg-white/10"
+            >
+              {{ isEditing() ? 'Cancelar edição' : 'Limpar' }}
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-2xl shadow-fuchsia-950/20 backdrop-blur">
+        <div class="mb-6 flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-semibold text-white">Estoque atual</h2>
+            <p class="text-sm text-slate-400">Veja rapidamente a disponibilidade de cada item do catálogo.</p>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          @for (stock of stocks(); track stock.stockID) {
+            <article class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div class="space-y-1">
+                <p class="font-semibold text-white">{{ productName(stock.productID) }}</p>
+                <p class="text-sm text-slate-400">Produto #{{ stock.productID }}</p>
+                <p class="text-sm text-fuchsia-200">Quantidade: {{ stock.quantity }}</p>
+              </div>
+
+              <div class="flex gap-2">
+                <button
+                  type="button"
+                  (click)="editStock(stock)"
+                  class="rounded-xl bg-amber-400 px-3 py-2 text-sm font-medium text-slate-950 transition hover:bg-amber-300"
+                >
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  (click)="deleteStock(stock.stockID)"
+                  class="rounded-xl bg-rose-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-rose-500"
+                >
+                  Excluir
+                </button>
+              </div>
+            </article>
+          } @empty {
+            <div class="rounded-2xl border border-dashed border-white/10 px-6 py-12 text-center text-slate-400">
+              Nenhum item de estoque cadastrado.
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

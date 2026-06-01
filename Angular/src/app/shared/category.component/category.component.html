@@ -1,0 +1,110 @@
+<div class="min-h-screen bg-[radial-gradient(circle_at_top,_#16324f_0%,_#08111f_45%,_#030712_100%)] px-6 py-10 text-slate-100">
+  <div class="mx-auto max-w-6xl space-y-8">
+    <div class="space-y-3">
+      <p class="text-sm font-medium uppercase tracking-[0.28em] text-cyan-300">Categories</p>
+      <h1 class="text-4xl font-semibold text-white">Organize o catálogo com categorias claras</h1>
+      <p class="max-w-2xl text-sm leading-7 text-slate-400">
+        Crie categorias principais e subcategorias para alimentar a navegação lateral da vitrine.
+      </p>
+    </div>
+
+    <div class="grid gap-8 xl:grid-cols-[0.95fr_1.05fr]">
+      <section class="rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-2xl shadow-cyan-950/20 backdrop-blur">
+        <div class="mb-6 flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-semibold text-white">{{ isEditing() ? 'Editar categoria' : 'Nova categoria' }}</h2>
+            <p class="text-sm text-slate-400">Campos simples e diretos para manter a estrutura limpa.</p>
+          </div>
+          @if (isEditing()) {
+            <span class="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-medium text-cyan-200">
+              Em edição
+            </span>
+          }
+        </div>
+
+        <form [formGroup]="categoryForm" (ngSubmit)="submit()" class="space-y-5">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-slate-200">Nome</label>
+              <input
+                formControlName="categoryName"
+              type="text"
+              placeholder="Ex.: Accessories"
+              class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+            />
+              @if (f.categoryName.touched && f.categoryName.invalid) {
+              <p class="text-sm text-rose-300">O nome da categoria é obrigatório.</p>
+            }
+          </div>
+
+          @if (error(); as errorValue) {
+            <div class="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+              {{ errorValue.error?.message || 'Nao foi possível salvar a categoria.' }}
+            </div>
+          }
+
+          <div class="flex flex-wrap gap-3">
+            <button
+              type="submit"
+              [disabled]="loading()"
+              class="rounded-2xl bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-cyan-900/40 disabled:text-slate-300"
+            >
+              {{ loading() ? 'Salvando...' : (isEditing() ? 'Atualizar categoria' : 'Criar categoria') }}
+            </button>
+
+            <button
+              type="button"
+              (click)="resetForm()"
+              class="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-medium text-slate-200 transition hover:bg-white/10"
+            >
+              {{ isEditing() ? 'Cancelar edição' : 'Limpar' }}
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-2xl shadow-cyan-950/20 backdrop-blur">
+        <div class="mb-6 flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-semibold text-white">Categorias criadas</h2>
+            <p class="text-sm text-slate-400">Use a hierarquia para facilitar a descoberta de produtos.</p>
+          </div>
+          <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300">
+            {{ categories().length }} itens
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          @for (category of categories(); track category.categoryID) {
+            <article class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div class="space-y-1">
+                <p class="font-semibold text-white">{{ category.categoryName }}</p>
+                <p class="text-sm text-slate-400">Categoria disponível na vitrine e no cadastro de produtos.</p>
+              </div>
+
+              <div class="flex gap-2">
+                <button
+                  type="button"
+                  (click)="editCategory(category)"
+                  class="rounded-xl bg-amber-400 px-3 py-2 text-sm font-medium text-slate-950 transition hover:bg-amber-300"
+                >
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  (click)="deleteCategory(category.categoryID)"
+                  class="rounded-xl bg-rose-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-rose-500"
+                >
+                  Excluir
+                </button>
+              </div>
+            </article>
+          } @empty {
+            <div class="rounded-2xl border border-dashed border-white/10 px-6 py-12 text-center text-slate-400">
+              Nenhuma categoria cadastrada ainda.
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

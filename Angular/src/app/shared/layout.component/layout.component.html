@@ -1,0 +1,29 @@
+<div class="min-h-screen bg-gray-900 text-white display-flex flex-col">
+  <nav class="flex gap-4 bg-gray-800 p-4 shadow">
+    <a routerLink="/home" class="hover:text-gray-300">Home</a>
+    <a routerLink="/products" class="hover:text-gray-300">Products</a>
+    <a routerLink="/stock" class="hover:text-gray-300">Stock</a>
+    <a routerLink="/categories" class="hover:text-gray-300">Categories</a>
+    <a routerLink="/orders" class="hover:text-gray-300">Orders</a>
+    <a routerLink="/shoppingcart" class="hover:text-gray-300">Shopping Cart</a>
+    <div class="content-right ml-auto">
+      @if (isAuthenticated()) {
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-cyan-300">{{ userEmail() }}</span>
+          <button type="button" (click)="logout()" class="hover:text-gray-300">Logout</button>
+        </div>
+      } @else {
+        <a routerLink="/register" class="hover:text-gray-300 pr-4">Register</a>
+        <a routerLink="/login" class="hover:text-gray-300">Login</a>
+      }
+    </div>
+  </nav>
+
+  <main class="p-4">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="bg-gray-800 p-4 text-center text-sm text-gray-400">
+    &copy; 2026 Student App
+  </footer>
+</div>

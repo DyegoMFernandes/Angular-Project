@@ -1,0 +1,114 @@
+<div class="min-h-screen bg-[radial-gradient(circle_at_top_right,_#2f1323_0%,_#140914_40%,_#030712_100%)] text-slate-100">
+  <div class="mx-auto flex min-h-screen max-w-7xl items-center px-6 py-10 lg:px-10">
+    <div class="grid w-full overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/60 shadow-2xl shadow-fuchsia-950/30 backdrop-blur xl:grid-cols-[0.95fr_1.05fr]">
+      <section class="flex items-center justify-center px-6 py-10 sm:px-10 lg:px-14">
+        <div class="w-full max-w-md">
+          <div class="mb-8 space-y-3">
+            <p class="text-sm font-medium uppercase tracking-[0.28em] text-fuchsia-300">Cadastro</p>
+            <h2 class="text-3xl font-semibold text-white">Crie sua conta</h2>
+
+          </div>
+
+          <form [formGroup]="registerForm" (ngSubmit)="submit()" class="space-y-5">
+            <div class="space-y-2">
+              <label for="register-email" class="text-sm font-medium text-slate-200">Email</label>
+              <input
+                id="register-email"
+                type="email"
+                formControlName="email"
+                placeholder="voce@site.com"
+                class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-fuchsia-400 focus:ring-2 focus:ring-fuchsia-400/20"
+              />
+              @if (email.touched && email.invalid) {
+                <p class="text-sm text-rose-300">
+                  @if (email.hasError('required')) { O email é obrigatório. }
+                  @if (email.hasError('email')) { Informe um email válido. }
+                </p>
+              }
+            </div>
+
+            <div class="space-y-2">
+              <label for="register-password" class="text-sm font-medium text-slate-200">Senha</label>
+              <input
+                id="register-password"
+                type="password"
+                formControlName="password"
+                placeholder="Senha com pelo menos 6 caracteres"
+                class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-fuchsia-400 focus:ring-2 focus:ring-fuchsia-400/20"
+              />
+              @if (password.touched && password.invalid) {
+                <p class="text-sm text-rose-300">
+                  @if (password.hasError('required')) { A senha é obrigatória. }
+                  @if (password.hasError('minlength')) { A senha deve ter pelo menos 6 caracteres. }
+                </p>
+              }
+            </div>
+
+            <div class="space-y-2">
+              <label for="confirm-password" class="text-sm font-medium text-slate-200">Confirmar senha</label>
+              <input
+                id="confirm-password"
+                type="password"
+                formControlName="confirmPassword"
+                placeholder="Repita a senha"
+                class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-fuchsia-400 focus:ring-2 focus:ring-fuchsia-400/20"
+              />
+              @if (confirmPassword.touched && confirmPassword.invalid) {
+                <p class="text-sm text-rose-300">
+                  @if (confirmPassword.hasError('required')) { Confirme sua senha. }
+                  @if (confirmPassword.hasError('minlength')) { A confirmação deve ter pelo menos 6 caracteres. }
+                </p>
+              }
+              @if (confirmPassword.touched && password.value !== confirmPassword.value) {
+                <p class="text-sm text-rose-300">As senhas precisam ser iguais.</p>
+              }
+            </div>
+
+            @if (authStore.error(); as error) {
+              <div class="rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+                {{ error.error?.message || 'Nao foi possível criar a conta. Tente novamente.' }}
+              </div>
+            }
+
+            <button
+              type="submit"
+              [disabled]="authStore.loading()"
+              class="inline-flex w-full items-center justify-center rounded-2xl bg-fuchsia-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-fuchsia-300 disabled:cursor-not-allowed disabled:bg-fuchsia-900/40 disabled:text-slate-300"
+            >
+              @if (authStore.loading()) {
+                <span>Criando conta...</span>
+              } @else {
+                <span>Cadastrar</span>
+              }
+            </button>
+          </form>
+
+          <div class="mt-8 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-slate-300">
+            Já possui uma conta?
+            <a routerLink="/login" class="font-semibold text-fuchsia-300 transition hover:text-fuchsia-200">
+              Entrar agora
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="relative hidden overflow-hidden xl:flex">
+        <div class="absolute inset-0 bg-[linear-gradient(135deg,_rgba(217,70,239,0.28),_rgba(190,24,93,0.08),_transparent_60%)]"></div>
+        <div class="absolute -right-16 top-12 h-72 w-72 rounded-full bg-fuchsia-400/20 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-rose-400/15 blur-3xl"></div>
+        <div class="relative flex h-full flex-col justify-between p-12">
+          <div class="space-y-6">
+            <div class="max-w-lg space-y-4">
+              <h1 class="text-5xl font-semibold leading-tight text-white">
+                Crie sua conta.
+              </h1>
+              <p class="text-lg leading-8 text-slate-300">
+                Cadastre-se para ter acesso a maior rede de produtos do país.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

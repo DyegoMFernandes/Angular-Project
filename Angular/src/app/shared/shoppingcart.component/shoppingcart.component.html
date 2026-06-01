@@ -1,0 +1,75 @@
+<div class="min-h-screen bg-slate-950 px-6 py-10 text-slate-100">
+  <div class="mx-auto max-w-5xl space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-semibold">Your Shopping Cart</h1>
+      </div>
+    </div>
+
+    @if (error(); as errorValue) {
+      <div class="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+        {{ errorValue.error?.message || 'Nao foi possivel carregar o carrinho.' }}
+      </div>
+    }
+
+    <div class="rounded-3xl border border-white/10 bg-slate-900/70 shadow-xl">
+      @if (itemViews().length === 0) {
+        <div class="px-6 py-12 text-center text-slate-400">
+          Seu carrinho está vazio.
+        </div>
+      } @else {
+        <div class="divide-y divide-white/10">
+          @for (item of itemViews(); track item.cartItemID) {
+            <div class="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
+              <div class="space-y-1">
+                <p class="text-lg font-semibold text-white">{{ item.productName }}</p>
+                <p class="text-sm text-slate-400">{{ item.description }}</p>
+                <label class="block text-sm text-slate-300">
+                  Quantidade
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    inputmode="numeric"
+                    [value]="item.quantity"
+                    (change)="updateQuantity(item.cartItemID, $any($event.target).value)"
+                    class="mt-2 w-28 rounded-xl border border-white/10 bg-slate-900/80 px-3 py-2 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+                  />
+                </label>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <div class="text-right">
+                  <p class="text-sm text-slate-400">Subtotal</p>
+                  <p class="text-lg font-semibold text-white">{{ item.lineTotal | currency:'USD' }}</p>
+                </div>
+                <button
+                  type="button"
+                  (click)="removeItem(item.cartItemID)"
+                  class="rounded-xl bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-500"
+                >
+                  Remover
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="flex justify-end gap-6">
+      <div class="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-2 py-2 text-center">
+        <p class="text-xs uppercase tracking-[0.20em] text-cyan-300">Total</p>
+        <p class="mt-1 text-1xl font-semibold text-white">{{ totalAmount() | currency:'USD' }}</p>
+      </div>
+      <button
+        type="button"
+        (click)="checkout()"
+        [disabled]="itemViews().length === 0 || loading() || orderLoading()"
+        class="rounded-2xl bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-cyan-900/40 disabled:text-slate-300"
+      >
+        {{ orderLoading() ? 'Criando pedido...' : 'Finalizar pedido' }}
+      </button>
+    </div>
+  </div>
+</div>

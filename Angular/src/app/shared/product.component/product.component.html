@@ -1,0 +1,179 @@
+<div class="min-h-screen bg-[radial-gradient(circle_at_top,_#16324f_0%,_#08111f_45%,_#030712_100%)] px-6 py-10 text-slate-100">
+  <div class="mx-auto max-w-7xl space-y-8">
+    <div class="space-y-3">
+      <p class="text-sm font-medium uppercase tracking-[0.28em] text-cyan-300">Products</p>
+      <h1 class="text-4xl font-semibold text-white">Uma vitrine de vendas com navegação por categoria</h1>
+      <p class="max-w-3xl text-sm leading-7 text-slate-400">
+        Explore os produtos, filtre pela categoria lateral e, se estiver administrando a loja, atualize o catálogo sem sair da mesma tela.
+      </p>
+    </div>
+
+    <div class="grid gap-8 xl:grid-cols-[280px_1fr]">
+      <aside class="space-y-6">
+        <section class="rounded-[2rem] border border-white/10 bg-slate-950/60 p-5 shadow-2xl shadow-cyan-950/20 backdrop-blur">
+          <div class="mb-4">
+            <h2 class="text-lg font-semibold text-white">Categorias</h2>
+            <p class="text-sm text-slate-400">Filtre os itens usando as categorias já cadastradas.</p>
+          </div>
+
+          <div class="space-y-2">
+            <button
+              type="button"
+              (click)="selectCategory(null)"
+              class="flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition"
+              [class.bg-cyan-400]="isSelectedCategory(null)"
+              [class.text-slate-950]="isSelectedCategory(null)"
+              [class.bg-white/5]="!isSelectedCategory(null)"
+              [class.text-slate-200]="!isSelectedCategory(null)"
+            >
+              <span>Todas as categorias</span>
+              <span class="text-xs uppercase tracking-[0.2em]">All</span>
+            </button>
+
+            @for (category of categories(); track category.categoryID) {
+              <button
+                type="button"
+                (click)="selectCategory(category)"
+                class="flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition"
+                [class.bg-cyan-400]="isSelectedCategory(category.categoryID)"
+                [class.text-slate-950]="isSelectedCategory(category.categoryID)"
+                [class.bg-white/5]="!isSelectedCategory(category.categoryID)"
+                [class.text-slate-200]="!isSelectedCategory(category.categoryID)"
+              >
+                <span>{{ category.categoryName }}</span>
+                <span class="text-xs uppercase tracking-[0.2em]">#{{ category.categoryID }}</span>
+              </button>
+            }
+          </div>
+        </section>
+
+        <section class="rounded-[2rem] border border-white/10 bg-slate-950/60 p-5 shadow-2xl shadow-cyan-950/20 backdrop-blur">
+          <div class="mb-4">
+            <h2 class="text-lg font-semibold text-white">{{ isEditing() ? 'Editar produto' : 'Novo produto' }}</h2>
+            <p class="text-sm text-slate-400">Área administrativa compacta para manter o catálogo atualizado.</p>
+          </div>
+
+          <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="space-y-4">
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-200">Nome</label>
+              <input
+                formControlName="productName"
+                type="text"
+                class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-200">Descrição</label>
+              <textarea
+                formControlName="description"
+                rows="3"
+                class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+              ></textarea>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-200">Preço</label>
+              <input
+                formControlName="price"
+                type="number"
+                min="0"
+                class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-200">Categoria</label>
+              <select
+                formControlName="categoryID"
+                class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+              >
+                <option [ngValue]="null">Selecione uma categoria</option>
+                @for (category of categories(); track category.categoryID) {
+                  <option [ngValue]="category.categoryID">{{ category.categoryName }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+              <button
+                type="submit"
+                class="rounded-2xl bg-cyan-400 px-4 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
+              >
+                {{ isEditing() ? 'Atualizar' : 'Criar' }}
+              </button>
+              <button
+                type="button"
+                (click)="resetForm()"
+                class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 font-medium text-slate-200 transition hover:bg-white/10"
+              >
+                {{ isEditing() ? 'Cancelar' : 'Limpar' }}
+              </button>
+            </div>
+          </form>
+        </section>
+      </aside>
+
+      <section class="space-y-6">
+        @if(cartError(); as cartErrorValue) {
+          <div class="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+            {{ cartErrorValue.error?.message || 'Nao foi possivel atualizar o carrinho.' }}
+          </div>
+        }
+
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          @for (product of filteredProducts(); track product.productID) {
+            <article class="group overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/60 shadow-2xl shadow-cyan-950/10 backdrop-blur transition hover:-translate-y-1 hover:border-cyan-400/30">
+              <div class="h-40 bg-[linear-gradient(135deg,_rgba(6,182,212,0.32),_rgba(14,116,144,0.08),_rgba(15,23,42,0.9))]"></div>
+              <div class="space-y-4 p-5">
+                <div class="space-y-2">
+                  <h3 class="text-xl font-semibold text-white">{{ product.productName }}</h3>
+                  <p class="min-h-12 text-sm leading-6 text-slate-400">{{ product.description }}</p>
+                </div>
+
+                <div class="flex items-end justify-between">
+                  <div>
+                    <p class="text-xs uppercase tracking-[0.24em] text-cyan-300">Price</p>
+                    <p class="text-2xl font-semibold text-white">${{ product.price.toFixed(2) }}</p>
+                  </div>
+                  <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300">
+                    #{{ product.productID }}
+                  </span>
+                </div>
+
+                <div class="flex flex-wrap gap-2 pt-2">
+                  <button
+                    type="button"
+                    (click)="onEdit(product)"
+                    class="rounded-xl bg-amber-400 px-3 py-2 text-sm font-medium text-slate-950 transition hover:bg-amber-300"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    (click)="onAddToCart(product)"
+                    [disabled]="!isAuthenticated() || cartLoading()"
+                    class="rounded-xl bg-emerald-500 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-emerald-900/40 disabled:text-slate-300"
+                  >
+                    {{ cartLoading() ? 'Adding...' : 'Add to cart' }}
+                  </button>
+                  <button
+                    type="button"
+                    (click)="onDelete(product.productID)"
+                    class="rounded-xl bg-rose-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-rose-500"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </article>
+          } @empty {
+            <div class="col-span-full rounded-[2rem] border border-dashed border-white/10 px-6 py-16 text-center text-slate-400">
+              Nenhum produto encontrado para a categoria selecionada.
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
